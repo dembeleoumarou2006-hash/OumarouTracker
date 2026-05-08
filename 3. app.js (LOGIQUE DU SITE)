@@ -1,0 +1,67 @@
+let data = JSON.parse(localStorage.getItem("candidatures")) || [];
+
+function sauvegarder() {
+  localStorage.setItem("candidatures", JSON.stringify(data));
+}
+
+function afficher() {
+  let table = document.getElementById("table");
+  table.innerHTML = "";
+
+  data.forEach((c, i) => {
+    table.innerHTML += `
+      <tr>
+        <td>${c.entreprise}</td>
+        <td>${c.poste}</td>
+        <td>${c.date}</td>
+        <td>${c.plateforme}</td>
+        <td>
+          <select onchange="changerStatut(${i}, this.value)">
+            <option ${c.statut=="En attente"?"selected":""}>En attente</option>
+            <option ${c.statut=="Entretien"?"selected":""}>Entretien</option>
+            <option ${c.statut=="Refusé"?"selected":""}>Refusé</option>
+            <option ${c.statut=="Accepté"?"selected":""}>Accepté</option>
+          </select>
+        </td>
+        <td><button class="delete" onclick="supprimer(${i})">X</button></td>
+      </tr>
+    `;
+  });
+}
+
+function ajouter() {
+  let c = {
+    entreprise: document.getElementById("entreprise").value,
+    poste: document.getElementById("poste").value,
+    date: document.getElementById("date").value,
+    plateforme: document.getElementById("plateforme").value,
+    statut: document.getElementById("statut").value
+  };
+
+  data.push(c);
+  sauvegarder();
+  afficher();
+}
+
+function supprimer(i) {
+  data.splice(i, 1);
+  sauvegarder();
+  afficher();
+}
+
+function changerStatut(i, value) {
+  data[i].statut = value;
+  sauvegarder();
+  afficher();
+}
+
+function rechercher() {
+  let val = document.getElementById("search").value.toLowerCase();
+  let rows = document.querySelectorAll("tbody tr");
+
+  rows.forEach(r => {
+    r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none";
+  });
+}
+
+afficher();
